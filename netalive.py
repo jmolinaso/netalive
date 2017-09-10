@@ -34,13 +34,13 @@ def main():
         logger.info("No internet detected, restarting connection")
         restart_raspbian_wlan()
 
-def loop_scheduler(rescheduler, interval, task, arguments=()):
-    rescheduler.enter(interval, 1, task, arguments)
-    rescheduler.run()
-    loop_scheduler(rescheduler,interval, task)
+def loop_scheduler(rescheduler, interval, arguments=()):
+    main()
+    rescheduler.enter(interval, 1, loop_scheduler, arguments + (arguments,))
 
 if __name__ == '__main__':
     logger.info("Start internet watcher")
     time_scheduler = sched.scheduler(time.time, time.sleep)
-    loop_scheduler(time_scheduler, 10, main)
+    loop_scheduler(time_scheduler, 10, (time_scheduler,10,))
+    time_scheduler.run()
     logger.info("Finished execution")
